@@ -44,7 +44,6 @@ double Initialize(string InputFile,string OutDirectory,long int RNG_SEED, double
     int nn[2];
     int pos;
     double x,y;
-    double ds = param->getDs();
     nn[0]=param->getSize();
     nn[1]=param->getSize();
     
@@ -146,30 +145,20 @@ int readInput(string file_name,Setup *setup, Parameters *param, string OutDirect
     param->setNucleonPositionsFromFile(setup->IFind(file_name,"nucleonPositionsFromFile"));
     param->setTarget(setup->StringFind(file_name,"Target"));
     param->setProjectile(setup->StringFind(file_name,"Projectile"));
-    param->setMode(setup->IFind(file_name,"mode"));
     param->setRunningCoupling(setup->IFind(file_name,"runningCoupling"));
     param->setL(setup->DFind(file_name,"L"));
-    param->setLOutput(setup->DFind(file_name,"LOutput"));
     param->setBG(setup->DFind(file_name,"BG"));
     param->setBGq(setup->DFind(file_name,"BGq"));
     param->setRnp(setup->DFind(file_name,"rnp"));
     param->setMuZero(setup->DFind(file_name,"muZero"));
     param->setc(setup->DFind(file_name,"c"));
     param->setSize(setup->IFind(file_name,"size"));
-    param->setSizeOutput(setup->IFind(file_name,"sizeOutput"));
-    param->setEtaSizeOutput(setup->IFind(file_name,"etaSizeOutput"));
-    param->setDetaOutput(setup->DFind(file_name,"detaOutput"));
     param->setUseFluctuatingx(setup->IFind(file_name,"useFluctuatingx"));
     param->setNc(setup->IFind(file_name,"Nc"));
-    param->setInverseQsForMaxTime(setup->IFind(file_name,"inverseQsForMaxTime"));
     param->setSeed(setup->ULLIFind(file_name,"seed"));
     param->setUseSeedList(setup->IFind(file_name,"useSeedList"));
-    param->setNy(setup->IFind(file_name,"Ny"));
     param->setRoots(setup->DFind(file_name,"roots"));
-    param->setNu(setup->DFind(file_name,"tDistNu"));
-    param->setUseFatTails(setup->IFind(file_name,"useFatTails"));
     param->setg(setup->DFind(file_name,"g"));
-    param->setm(setup->DFind(file_name,"m"));
     param->setJacobianm(setup->DFind(file_name,"Jacobianm"));
     param->setSigmaNN(setup->DFind(file_name,"SigmaNN"));
     param->setRmax(setup->DFind(file_name,"rmax"));
@@ -180,23 +169,18 @@ int readInput(string file_name,Setup *setup, Parameters *param, string OutDirect
     param->setRapidity(setup->DFind(file_name,"Rapidity"));
     param->setUseNucleus(setup->IFind(file_name,"useNucleus"));
     param->setg2mu(setup->DFind(file_name,"g2mu"));
-    param->setMaxtime(setup->DFind(file_name,"maxtime"));
-    param->setdtau(setup->DFind(file_name,"dtau"));
     param->setRunWithQs(setup->IFind(file_name,"runWith0Min1Avg2MaxQs"));
     param->setRunWithkt(setup->IFind(file_name,"runWithkt"));
     param->setRunWithLocalQs(setup->IFind(file_name,"runWithLocalQs"));
     param->setRunWithThisFactorTimesQs(setup->DFind(file_name,"runWithThisFactorTimesQs"));
     param->setxFromThisFactorTimesQs(setup->DFind(file_name,"xFromThisFactorTimesQs"));
     param->setLinearb(setup->IFind(file_name,"samplebFromLinearDistribution"));
-    param->setWriteOutputs(setup->IFind(file_name,"writeOutputs"));
-    param->setWriteEvolution(setup->IFind(file_name,"writeEvolution"));
     param->setAverageOverNuclei(setup->IFind(file_name,"averageOverThisManyNuclei"));
     param->setUseTimeForSeed(setup->IFind(file_name,"useTimeForSeed"));
     param->setUseFixedNpart(setup->IFind(file_name,"useFixedNpart"));
     param->setSmearQs(setup->IFind(file_name,"smearQs"));
     param->setSmearingWidth(setup->DFind(file_name,"smearingWidth"));
     param->setGaussianWounding(setup->IFind(file_name,"gaussianWounding"));
-    param->setReadMultFromFile(setup->IFind(file_name,"readMultFromFile"));
     param->setProtonAnisotropy(setup->DFind(file_name,"protonAnisotropy"));
     param->setUseConstituentQuarkProton(setup->DFind(file_name,"useConstituentQuarkProton"));
     std::cerr << "# PARAMETERS READ IN FROM FILE " << file_name << endl;
@@ -217,11 +201,9 @@ int readInput(string file_name,Setup *setup, Parameters *param, string OutDirect
     IPSatInfo << " " << endl;
     IPSatInfo << "Output by readInput in bGlauberIPSat.cpp: " << endl;
     IPSatInfo << " " << endl;
-    IPSatInfo << "Program run in mode " << param->getMode() << endl;
     IPSatInfo << "Nc " << param->getNc() << endl;
     IPSatInfo << "size " << param->getSize() << endl;
     IPSatInfo << "lattice spacing a " << param->getL()/static_cast<double>(param->getSize()) << " fm " << endl;
-    IPSatInfo << "Ny " << param->getNy() << endl;
     IPSatInfo << "Projectile " << param->getProjectile() << endl;
     IPSatInfo << "Target " << param->getTarget() << endl;
     IPSatInfo << "Gaussian wounding " << param->getGaussianWounding() << endl;
@@ -232,13 +214,11 @@ int readInput(string file_name,Setup *setup, Parameters *param, string OutDirect
     IPSatInfo << "running alpha_s with k_T" << endl;
     IPSatInfo << "QsmuRatio " << param->getQsmuRatio() << endl;
     IPSatInfo << "smeared mu " << param->getSmearQs() << endl;
-    IPSatInfo << "m " << param->getm() << endl;
     IPSatInfo << "rmax " << param->getRmax() << endl;
     if (param->getSmearQs()==1){
         
         IPSatInfo << "smearing width " << param->getSmearingWidth() << endl;
     }
-    IPSatInfo << "Using fat tailed distribution " << param->getUseFatTails() << endl;
     IPSatInfo.close();
     
     return 0;

@@ -14,11 +14,11 @@ double Initialize(std::string InputFile,std::string OutDirectory,long int RNG_SE
 
 
 namespace InitialConditions{
-
+    
     ///////////////////////////////
     // SET TARGET WILSON LINES U //
     ///////////////////////////////
-
+    
     void SetTarget(WilsonLines *U,WilsonLines *Utemp,VectorFields *gSQRmu){
         
         // RESET TARGET LINKS //
@@ -27,7 +27,7 @@ namespace InitialConditions{
         // LOOP OVER SLICES IN RAPIDITY //
         for(INT RapSlice=0;RapSlice<Lattice::NRap;RapSlice++){
             if(RapSlice%20==0){
-                std::cerr << "# BEGINNING COMPUTATION FOR SLICE NRap=" << RapSlice << " OF " << Lattice::NRap << std::endl;
+                std::cout << "# BEGINNING COMPUTATION FOR SLICE NRap=" << RapSlice << " OF " << Lattice::NRap << std::endl;
             }
             
             // SET TARGET RHO FIELDS /
@@ -40,11 +40,11 @@ namespace InitialConditions{
                         // END OPTION //
                         
                         // OPTION FOR LOCALIZED COLOR CHARGE DISTRIBUTION  //
-                        // [g \mu]=fm^-1 -- NATIVELY [g \mu]= DIMLESS //
+                        // [g \mu]=fm^-1 //
                         DOUBLE Rho0=gSQRmu->Get(x,y,0,0)[0]/(Lattice::a[0]*sqrt(Lattice::NRap)); // fm^-2 //
                         FourierSpace::RhoT->SetXc(x,y,a,Rho0*RandomNumberGenerator::Gauss(1.0)); // fm^-2 //
                         // END OPTION //
-
+                        
                     }
                 }
                 
@@ -52,6 +52,17 @@ namespace InitialConditions{
             
             // FOURIER TRANSFORM RHO TO MOMENTUM SPACE //
             FourierSpace::RhoT->ExecuteXtoP();
+            
+            // RENORMALIZE AFTER X->P -- [d^2x] = fm^2 //
+            for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+                for(INT y=0;y<U->N[1];y++){
+                    for(INT x=0;x<U->N[0];x++){
+                        
+                        COMPLEX RhoTTEMP=FourierSpace::RhoT->GetP(x,y,a); // fm^-2 //
+                        FourierSpace::RhoT->SetP(x,y,a,RhoTTEMP*COMPLEX(Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                    }
+                }
+            }
             
             // SET TARGET RHO OVER DERIVATIVE //
             #pragma omp parallel for collapse(2)
@@ -66,10 +77,10 @@ namespace InitialConditions{
                             
                             for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                                 // SAVE MOMENTUM SPACE RHO //
-                                COMPLEX rhoTemp=FourierSpace::RhoT->GetP(pXIndex,pYIndex,a); // fm^-2 //
+                                COMPLEX rhoTemp=FourierSpace::RhoT->GetP(pXIndex,pYIndex,a); // DIMLESS //
                                 
                                 // SAVE RHO/DERIVATIVE^2 //
-                                FourierSpace::RhoT->SetP(pXIndex,pYIndex,a,rhoTemp/DerivativeFactorSqr); // DIMLESS //
+                                FourierSpace::RhoT->SetP(pXIndex,pYIndex,a,rhoTemp/DerivativeFactorSqr); // fm^2 //
                                 
                             }
                             
@@ -87,11 +98,11 @@ namespace InitialConditions{
                         
                         for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                             // SAVE MOMENTUM SPACE RHO //
-                            COMPLEX rhoTemp=FourierSpace::RhoT->GetP(pXIndex,pYIndex,a);  // fm^-2 //
+                            COMPLEX rhoTemp=FourierSpace::RhoT->GetP(pXIndex,pYIndex,a);  // DIMLESS //
                             
                             // SAVE RHO/DERIVATIVE //
                             DOUBLE mLatSqr=RegMass*RegMass*GeVtoinvfm*GeVtoinvfm; // fm^-2 //
-                            FourierSpace::RhoT->SetP(pXIndex,pYIndex,a,rhoTemp/(DerivativeFactorSqr+mLatSqr)); // DIMLESS //
+                            FourierSpace::RhoT->SetP(pXIndex,pYIndex,a,rhoTemp/(DerivativeFactorSqr+mLatSqr)); // fm^2 //
                             
                         }
                         
@@ -101,6 +112,18 @@ namespace InitialConditions{
             
             // FOURIER TRANSFORM BACK //
             FourierSpace::RhoT->ExecutePtoX();
+            
+            // RENORMALIZE AFTER P->X -- [d^2p] = [1/(Na)^2] = fm^-2 //
+            for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+                for(INT y=0;y<U->N[1];y++){
+                    for(INT x=0;x<U->N[0];x++){
+                        
+                        COMPLEX RhoTTEMP=FourierSpace::RhoT->GetX(x,y,a); // fm^-2
+                        FourierSpace::RhoT->SetXc(x,y,a,RhoTTEMP/COMPLEX(Lattice::N[0]*Lattice::N[1]*Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                        
+                    }
+                }
+            }
             
             // RESET TEMP TARGET FIELDS //
             Utemp->SetIdentity();
@@ -114,7 +137,7 @@ namespace InitialConditions{
                     for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                         
                         // SET TARGET FIELDS //
-                        alphaTemp[a]=real(FourierSpace::RhoT->GetX(x,y,a))/(U->N[0]*U->N[1]);
+                        alphaTemp[a]=real(FourierSpace::RhoT->GetX(x,y,a)); // DIMLESS
                         
                     }
                     // EXPONENTIATE TO GAUGE LINK //
@@ -138,39 +161,50 @@ namespace InitialConditions{
         }
         
     }
-
+    
     /////////////////////////////
     // SET PROJECTILE FIELDS A //
     /////////////////////////////
-
+    
     void SetProjectile(VectorFields *gSQRmu){
         
         // SET PROJECTILE RHO FIELDS /
         for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
             for(INT y=0;y<ProjSolution::A->N[1];y++){
                 for(INT x=0;x<ProjSolution::A->N[0];x++){
-                
-                
+                    
+                    
                     // OPTION FOR LOCALIZED COLOR CHARGE DISTRIBUTION  //
-                    // [g \mu]=fm^-1 -- NATIVELY [g \mu]= DIMLESS //
+                    // [g \mu]=fm^-1 //
                     DOUBLE Rho0=gSQRmu->Get(x,y,0,0)[0]/Lattice::a[0];  // fm^-2 //
                     FourierSpace::RhoP->SetX(x,y,a,Rho0*RandomNumberGenerator::Gauss(1.0));  // fm^-2 //
-
+                    
                     // END OPTION //
                     
                     // OPTION FOR UNIFORM COLOR CHARGE DISTRIBUTION  //
                     //FourierSpace::RhoP->SetX(x,y,a,RandomNumberGenerator::Gauss(g2muP/Lattice::a[0]));
                     // END OPTION //
-
+                    
                 }
                 
             }
         }
         
-        //std::cerr << "# PERFORMING FOURIER TRANSFORM OF PROJECTILE RHO VARIABLES" << std::endl;
+        //std::cout << "# PERFORMING FOURIER TRANSFORM OF PROJECTILE RHO VARIABLES" << std::endl;
         
         // FOURIER TRANSFORM RHOS TO MOMENTUM SPACE //
         FourierSpace::RhoP->ExecuteXtoP();
+        
+        // RENORMALIZE AFTER X->P -- [d^2x] = [a^2] = fm^2 //
+        for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+            for(INT y=0;y<ProjSolution::A->N[1];y++){
+                for(INT x=0;x<ProjSolution::A->N[0];x++){
+                    
+                    COMPLEX RhoPTEMP=FourierSpace::RhoP->GetP(x,y,a); // fm^-2 //
+                    FourierSpace::RhoP->SetP(x,y,a,RhoPTEMP*COMPLEX(Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                }
+            }
+        }
         
         // SET PROJECTILE RHO OVER DERIVATIVE //
         #pragma omp parallel for collapse(2)
@@ -185,10 +219,10 @@ namespace InitialConditions{
                         
                         for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                             // SAVE MOMENTUM SPACE RHO //
-                            COMPLEX rhoTemp=FourierSpace::RhoP->GetP(pXIndex,pYIndex,a); // fm^-2 //
+                            COMPLEX rhoTemp=FourierSpace::RhoP->GetP(pXIndex,pYIndex,a); // DIMLESS //
                             
                             // SAVE RHO/DERIVATIVE^2 //
-                            FourierSpace::RhoP->SetP(pXIndex,pYIndex,a,rhoTemp/DerivativeFactorSqr); // DIMLESS //
+                            FourierSpace::RhoP->SetP(pXIndex,pYIndex,a,rhoTemp/DerivativeFactorSqr); // fm^2 //
                             
                         }
                         
@@ -206,13 +240,12 @@ namespace InitialConditions{
                     
                     for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                         // SAVE MOMENTUM SPACE RHO //
-                        COMPLEX rhoTemp=FourierSpace::RhoP->GetP(pXIndex,pYIndex,a);  // fm^-2 //
+                        COMPLEX rhoTemp=FourierSpace::RhoP->GetP(pXIndex,pYIndex,a);  // DIMLESS //
                         
                         // SAVE RHO/DERIVATIVE //
-//                        FourierSpace::RhoP->SetP(pXIndex,pYIndex,a,rhoTemp*(-0.5*Lattice::a[0]*Lattice::a[1])/(DerivativeFactor+RegMass*RegMass*Lattice::a[0]*Lattice::a[1]*GeVtoinvfm*GeVtoinvfm));
                         DOUBLE mLatSqr=RegMass*RegMass*GeVtoinvfm*GeVtoinvfm;  // fm^-2 //
-                        FourierSpace::RhoP->SetP(pXIndex,pYIndex,a,rhoTemp/(DerivativeFactorSqr+mLatSqr)); // DIMLESS //
-
+                        FourierSpace::RhoP->SetP(pXIndex,pYIndex,a,rhoTemp/(DerivativeFactorSqr+mLatSqr)); // fm^2 //
+                        
                         
                     }
                     
@@ -223,18 +256,30 @@ namespace InitialConditions{
         // FOURIER TRANSFORM BACK //
         FourierSpace::RhoP->ExecutePtoX();
         
+        // RENORMALIZE AFTER P->X -- [d^2p] = [1/(Na)^2] = fm^-2 //
+        for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+            for(INT y=0;y<ProjSolution::A->N[1];y++){
+                for(INT x=0;x<ProjSolution::A->N[0];x++){
+                    
+                    COMPLEX RhoPTEMP=FourierSpace::RhoP->GetX(x,y,a); // fm^2
+                    FourierSpace::RhoP->SetXc(x,y,a,RhoPTEMP/COMPLEX(Lattice::N[0]*Lattice::N[1]*Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                    
+                }
+            }
+        }
+        
         // SAVE TO SUNc VECTOR //
         #pragma omp parallel for collapse(3)
         for(INT y=0;y<ProjSolution::A->N[1];y++){
             for(INT x=0;x<ProjSolution::A->N[0];x++){
                 for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
-                    ProjSolution::A->Get(x,y,0,a)[0]=real(FourierSpace::RhoP->GetX(x,y,a))/(ProjSolution::A->N[0]*ProjSolution::A->N[1]);
+                    ProjSolution::A->Get(x,y,0,a)[0]=real(FourierSpace::RhoP->GetX(x,y,a));
                 }
             }
         }
         
     }
-
+    
     // GENERAL ROUTINE FOR SETTING GLAUBER + IP-Sat FIELDS //
     void SetbGlauberIPSat(long int RNG_SEED){
         
@@ -242,16 +287,16 @@ namespace InitialConditions{
         //   SET INITIAL CONDITIONS  //
         ///////////////////////////////
         
-        //std::cerr << "## SETTING GLAUBER+IP-Sat CONDITIONS " << std::endl;
-                
+        //std::cout << "## SETTING GLAUBER+IP-Sat CONDITIONS " << std::endl;
+        
         // SAMPLE NUCLEON POSITIONS AND DETMERINE RHOS //
-        //std::cerr << "# SAMPLING NUCLEI " << std::endl;
+        //std::cout << "# SAMPLING NUCLEI " << std::endl;
         
         DOUBLE *Projectile_g2mu2=new DOUBLE[Lattice::N[0]*Lattice::N[1]];
         DOUBLE *Target_g2mu2=new DOUBLE[Lattice::N[0]*Lattice::N[1]];
         
         bImpact=Initialize(IO::InputFile,IO::OutputDirectory,RNG_SEED,Projectile_g2mu2,Target_g2mu2,OUTPUT_FLAG);
-                
+        
         // COPY TO LOCAL FIELDS FROM GLAUBER IPSAT //
         for(INT yLoc=0;yLoc<Lattice::N[1];yLoc++){
             for(INT xLoc=0;xLoc<Lattice::N[0];xLoc++){
@@ -260,7 +305,7 @@ namespace InitialConditions{
                 
                 // g_s==1 //
                 // [Projectile_g2mu2] = DIMLESS //
-                // [g2mu]=fm^-2 //
+                // [g2mu]=fm^-1 //
                 g2mu::Proj->Get(xLoc,yLoc,0,0)[0]=sqrt(Projectile_g2mu2[Index]/(Lattice::a[0]*Lattice::a[1]));
                 g2mu::Targ->Get(xLoc,yLoc,0,0)[0]=sqrt(Target_g2mu2[Index]/(Lattice::a[0]*Lattice::a[1]));
                 
@@ -271,35 +316,35 @@ namespace InitialConditions{
         delete[] Projectile_g2mu2;
         delete[] Target_g2mu2;
         
-        //std::cerr << "# FINSIHED SAMPLING NUCLEI " << std::endl;
+        //std::cout << "# FINSIHED SAMPLING NUCLEI " << std::endl;
         
         // OPTION FOR FILE OUTPUT OF RHOS //
         if(OUTPUT_FLAG==2){
-            std::cerr << "# OUTPUTTING RHOS " << std::endl;
+            std::cout << "# OUTPUTTING RHOS " << std::endl;
             IO::SaveConfigurationE("ProjRho",g2mu::Proj);
             IO::SaveConfigurationE("TargetRho",g2mu::Targ);
         }
         // END OPTION //
         
         // SET FIELDS FROM g2mu RHO FIELDS //
-        //std::cerr << "# SETTING TARGET FIELDS " << std::endl;
+        //std::cout << "# SETTING TARGET FIELDS " << std::endl;
         
         SetTarget(TargetFields::U,TempTargetFields::U,g2mu::Targ);
         
-        //std::cerr << "# FINSIHED SETTING TARGET FIELDS " << std::endl;
+        //std::cout << "# FINSIHED SETTING TARGET FIELDS " << std::endl;
         
-        //std::cerr << "# SETTING TARGET FIELDS " << std::endl;
+        //std::cout << "# SETTING TARGET FIELDS " << std::endl;
         
         SetProjectile(g2mu::Proj);
         
-        //std::cerr << "# FINISHED SETTING TARGET FIELDS " << std::endl;
+        //std::cout << "# FINISHED SETTING TARGET FIELDS " << std::endl;
         
-        std::cerr << "## FINISHED SETTING GLAUBER+IP-Sat INITIAL CONDITIONS" << std::endl;
+        std::cout << "## FINISHED SETTING GLAUBER+IP-Sat INITIAL CONDITIONS" << std::endl;
         
         
     }
-
-
+    
+    
 }
 
 #endif

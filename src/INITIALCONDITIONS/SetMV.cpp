@@ -37,10 +37,6 @@ namespace InitialConditions{
                         // OPTION FOR INFINITE MV //
                         FourierSpace::RhoT->SetXc(x,y,a,RandomNumberGenerator::Gauss(g2muT/(Lattice::a[0]*sqrt(Lattice::NRap))));
                         // END OPTION //
-                        
-                        // OPTION FOR INFINITE MV //
-                        //FourierSpace::RhoT->SetXc(x,y,a,3.24*x*x+y*y*10.2+48.*x*y+12.123*a*a+420.*a*x);
-                        // END OPTION //
 
                     }
                 }
@@ -51,6 +47,17 @@ namespace InitialConditions{
             
             // FOURIER TRANSFORM RHO TO MOMENTUM SPACE //
             FourierSpace::RhoT->ExecuteXtoP();
+            
+            // RENORMALIZE AFTER X->P -- [d^2x] = fm^2 //
+            for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+                for(INT y=0;y<U->N[1];y++){
+                    for(INT x=0;x<U->N[0];x++){
+                        
+                        COMPLEX RhoTTEMP=FourierSpace::RhoT->GetP(x,y,a); // fm^-2 //
+                        FourierSpace::RhoT->SetP(x,y,a,RhoTTEMP*COMPLEX(Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                    }
+                }
+            }
             
             // SET RHO OVER DERIVATIVE //
             for(INT pXIndex=0;pXIndex<Lattice::N[0];pXIndex++){
@@ -98,6 +105,18 @@ namespace InitialConditions{
 
             // FOURIER TRANSFORM BACK //
             FourierSpace::RhoT->ExecutePtoX();
+            
+            // RENORMALIZE AFTER P->X -- [d^2p] = [1/(Na)^2] = fm^-2 //
+            for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+                for(INT y=0;y<U->N[1];y++){
+                    for(INT x=0;x<U->N[0];x++){
+                        
+                        COMPLEX RhoTTEMP=FourierSpace::RhoT->GetX(x,y,a); // fm^-2
+                        FourierSpace::RhoT->SetXc(x,y,a,RhoTTEMP/COMPLEX(Lattice::N[0]*Lattice::N[1]*Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                        
+                    }
+                }
+            }
             
             // RESET TEMP TARGET FIELDS //
             Utemp->SetIdentity();
@@ -170,10 +189,7 @@ namespace InitialConditions{
                     // OPTION FOR UNIFORM COLOR CHARGE DISTRIBUTION  //
                     //FourierSpace::RhoP->SetX(x,y,a,RandomNumberGenerator::Gauss(g2muP/Lattice::a[0]));
                     // END OPTION //
-                    
-                    // OPTION FOR DEBUGGING //
-                    //FourierSpace::RhoP->SetX(x,y,a,5.3*x*x+y*y*9.4+3.431*a*a+69.*y*a);
-                    // END OPTION //
+
                 }
                 
             }
@@ -183,6 +199,17 @@ namespace InitialConditions{
         
         // FOURIER TRANSFORM RHOS TO MOMENTUM SPACE //
         FourierSpace::RhoP->ExecuteXtoP();
+        
+        // RENORMALIZE AFTER X->P -- [d^2x] = [a^2] = fm^2 //
+        for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+            for(INT y=0;y<ProjSolution::A->N[1];y++){
+                for(INT x=0;x<ProjSolution::A->N[0];x++){
+                    
+                    COMPLEX RhoPTEMP=FourierSpace::RhoP->GetP(x,y,a); // fm^-2 //
+                    FourierSpace::RhoP->SetP(x,y,a,RhoPTEMP*COMPLEX(Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                }
+            }
+        }
         
         // SET RHO OVER DERIVATIVE //
         for(INT pXIndex=0;pXIndex<Lattice::N[0];pXIndex++){
@@ -231,6 +258,18 @@ namespace InitialConditions{
         
         // FOURIER TRANSFORM BACK //
         FourierSpace::RhoP->ExecutePtoX();
+        
+        // RENORMALIZE AFTER X->P -- [d^2x] = [a^2] = fm^2 //
+        for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
+            for(INT y=0;y<ProjSolution::A->N[1];y++){
+                for(INT x=0;x<ProjSolution::A->N[0];x++){
+                    
+                    COMPLEX RhoPTEMP=FourierSpace::RhoP->GetP(x,y,a); // fm^-2 //
+                    FourierSpace::RhoP->SetP(x,y,a,RhoPTEMP*COMPLEX(Lattice::a[0]*Lattice::a[1])); // DIMLESS //
+                }
+            }
+            
+        }
         
         // SAVE TO SUNc VECTOR //
         for(INT y=0;y<ProjSolution::A->N[1];y++){

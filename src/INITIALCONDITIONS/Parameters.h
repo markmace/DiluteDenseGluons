@@ -24,30 +24,19 @@ class Parameters
     int A;       // number of nucleons;
     int locNc;      // number of colors (SU(Nc))
     int size;    // the length of the lattice (make it 2^n, with n integer)
-    int sizeOutput;  // the length of the lattice for the output data (sizeOutput <= size!)
-    int etaSizeOutput;  // the length of the lattice in rapidity for the output data
-    double detaOutput; // step size in rapidity for the output data
     int runningCoupling; // switch to decide if alpha_s should run (0 constant alpha_s, 1 running coupling)
     double R;
     int useTimeForSeed; // decide if the system time should be used to generate a seed (1) or not (0)
     int useSeedList; // read random seeds from a file if set to (1) - this overwrites the 'use time for seed' setting
     unsigned long long int seed;    // random seed that's added to the current time to generate the full seed (or the full seed, depending on the value of getUseTimeforSeed())
-    double ds;   // 'time' step
-    int Ny;      // longitudinal 'resolution' (see Lappi, Eir. Phys. J. C55,285)
     double g2mu; // g^2 mu
     double Qs;   // Q_s, to be dynamically determined
-    int steps;   // number of rapidity steps
-    int measureSteps; // number of steps in interval between measurements
-    int mode;    // mode: (1) run the evolution, (2) analysis with files from disk
     int runWithQs; // set whether alpha_s should run with the maximum(2), average (1) or minimum(0) of Q_s from nucleus A and B
     int runWithkt; // set whether alpha_s should run kt (1) or not (0) - if this is set it overwrites any running with Q_s
     int runWithLocalQs; // set whether alpha_s should run with the local Q_s from nucleus A and B (1) or the average (0), both use settings from runWithQs
     double runWithThisFactorTimesQs; // set the factor in front of Q_s under the log in alpha_s
     double mu0;  // cutoff to avoid the Landau pole in the 1-loop running coupling expression
-    double LambdaQCD; // LambdaQCD in units of g^2mu
     double g; // coupling g needed in the initU3 where g^2mu does not scale out
-    double kappa4Factor; // factor that multiplies the ratio of kappa4/(g^2 mu^2)^3
-    double m; // mass term in GeV to cut off the Coulomb tail - should be of the order of \Lambda_QCD = 0.2 GeV
     double Jacobianm; // mass term in GeV in the Jacobian going from y to eta
     double QsmuRatio; // ratio between Qs and mu: Q_s = QsmuRatio * g^2 mu for nucleus A
     double QsmuRatioB; // ratio between Qs and mu: Q_s = QsmuRatio * g^2 mu for nucleus B
@@ -58,8 +47,6 @@ class Parameters
     double averageQsmin; // the average Q_s (minimum of nucleus A and B) used as scale for running coupling
     double alphas; // the alpha_s computed at the scale given by the average Q_s
     double xExponent; // - exponent with which Q_s grows with x (usually 0.31 in IP-Sat for nuclei)
-    int writeOutputs; // decide whether to write (1) or not write (0) large output files (like hydro input data)
-    int writeEvolution; // decide whether to write (1) or not write (0) time dependent quantities like the anisotropy
     unsigned long long int randomSeed; // stores the random seed used (so the event can be reproduced)
     string NucleusQsTableFileName; // the file name for the table containing Qs^2 as a function of Y and Qs^2(Y=0)
     double BG; // the width of the Gaussian describing the shape of the proton in GeV^(-2)
@@ -72,12 +59,6 @@ class Parameters
     double xFromThisFactorTimesQs; // set the factor beta in x = Q_s*beta/roots
     double Tpp; // This is the convolution of two T_p's to be used in the weight for different impact parameters
     // T_pp (b_T) = \sum \delta^2 x_T T_p(x_T) T_p(x_T-b_T)
-    int inverseQsForMaxTime;// use 1/Q_s as the maximal evolution time (1) or use the manually entered maximal evolution time (0)
-    int useFatTails; // if 1 use the student's t distribution instead of a Gaussian (0) to sample the rho's (standard deviation is still g2mu)
-    double nu; // nu in the student's t distribution (used to produce fatter tails than the Gaussian)
-    double area; // area of the initial interaction region
-    double eccentricity2; // save the computed ellipticity to output together with S_T and dN/dy in the end
-    double Psi; // the initial angle Psi_2 that determines the event-plane (geometric/spatial one)
     //Glauber parameters:
     double SigmaNN;   // nucleon-nucleon cross section
     double b;         // impact parameter
@@ -87,10 +68,7 @@ class Parameters
     string Target;    // target nucleus' name
     string Projectile;// projectile nucleus' name
     double L;         // lattice size in fm
-    double LOutput;   // lattice size for the output in fm
     int useNucleus;   // use nuclei (1) or a constant g^2mu distribution over the lattice (0) or constant g^2mu target (2)
-    double dtau;      // time step in lattice units
-    double maxtime;   // maximal evolution time in fm/c
     int Npart;        // Number of participants
     int averageOverNuclei; // average over this many nuclei to get a smooth(er) distribution
     int nucleonPositionsFromFile; // switch to determine whether to sample nucleon positions (0) or read them from a file (1)
@@ -104,7 +82,6 @@ class Parameters
     //int MPIrank; // MPI rank
     //int MPIsize; // MPI number of cores
     int success; // no collision happened (0) or collision happened (1) - used to restart if there was no collision
-    int readMultFromFile; // if set, the gluon distribution as a function of k_T is read from file and the integrated rate computed
     double rmax; // radius at which we cut distribution for each nucleon (in fm)
     double protonAnisotropy; //anisotropy of the proton thickness function: xi in Exp[-(x^2 + xi y^2)/2/B]/2/Pi/B Sqrt[xi] - as a first test
     int useConstituentQuarkProton; // if 1 use a proton made up of 3 constituent quarks.
@@ -129,46 +106,25 @@ class Parameters
     int getA() {return A;}
     void setNc(int x) {locNc=x;}
     int getNc() {return locNc;}
-    void setNy(int x) {Ny=x;}
-    int getNy() {return Ny;}
     void setSize(int x) {size=x;}
     int getSize() {return size;}
     void setProtonAnisotropy(double x) {protonAnisotropy=x;}
     double getProtonAnisotropy() {return protonAnisotropy;}
     
-    void setSizeOutput(int x) {sizeOutput=x;}
-    int getSizeOutput() {return sizeOutput;}
-    void setEtaSizeOutput(int x) {etaSizeOutput=x;}
-    int getEtaSizeOutput() {return etaSizeOutput;}
-    void setDetaOutput(double x) {detaOutput=x;}
-    double getDetaOutput() {return detaOutput;}
-    
     void setAverageOverNuclei(int x) {averageOverNuclei=x;}
     int getAverageOverNuclei() {return averageOverNuclei;}
     void setR(double x) {R=x;}
     double getR() {return R;}
-    void setDs(double x) {ds=x;}
-    double getDs() {return ds;}
     void setg2mu(double x) {g2mu=x;}
     double getg2mu() {return g2mu;}
     void setQs(double x) {Qs=x;}
     double getQs() {return Qs;}
-    void setSteps(int x) {steps=x;};
-    int getSteps() {return steps;}
-    void setMeasureSteps(int x) {measureSteps=x;};
-    int getMeasureSteps() {return measureSteps;}
-    void setMode(int x) {mode=x;};
-    int getMode() {return mode;}
     void setRunningCoupling(int x) {runningCoupling=x;};
     int getRunningCoupling() {return runningCoupling;}
     void setMu0(double x) {mu0=x;}
     double getMu0() {return mu0;}
     void setg(double x) {g=x;}
     double getg() {return g;}
-    void setLambdaQCD(double x) {LambdaQCD=x;}
-    double getLambdaQCD() {return LambdaQCD;}
-    void setkappa4Factor(double x) {kappa4Factor=x;}
-    double getkappa4Factor() {return kappa4Factor;}
     void setSigmaNN(double x) {SigmaNN=x;}
     double getSigmaNN() {return SigmaNN;}
     void setb(double x) {b=x;}
@@ -183,10 +139,6 @@ class Parameters
     string getProjectile(){return Projectile;}
     void setL(double x) {L=x;}
     double getL() {return L;}
-    void setLOutput(double x) {LOutput=x;}
-    double getLOutput() {return LOutput;}
-    void setm(double x) {m=x;}
-    double getm() {return m;}
     void setJacobianm(double x) {Jacobianm=x;}
     double getJacobianm() {return Jacobianm;}
     void setQsmuRatio(double x) {QsmuRatio=x;}
@@ -195,10 +147,6 @@ class Parameters
     double getQsmuRatioB() {return QsmuRatioB;}
     void setRapidity(double x) {rapidity=x;}
     double getRapidity() {return rapidity;}
-    void setMaxtime(double x) {maxtime=x;}
-    double getMaxtime() {return maxtime;}
-    void setdtau(double x) {dtau=x;}
-    double getdtau() {return dtau;}
     void setNpart(int x) {Npart=x;};
     int getNpart() {return Npart;}
     void setAverageQs(double x) {averageQs=x;}
@@ -241,24 +189,12 @@ class Parameters
     double getxFromThisFactorTimesQs() {return xFromThisFactorTimesQs;}
     void setTpp(double x) {Tpp=x;}
     double getTpp() {return Tpp;}
-    void setNu(double x) {nu=x;}
-    double getNu() {return nu;}
     void setUseFixedNpart(int x) {useFixedNpart=x;}
     int getUseFixedNpart() {return useFixedNpart;}
-    void setArea(double x) {area=x;}
-    double getArea() {return area;}
-    void setEccentricity2(double x) {eccentricity2=x;}
-    double getEccentricity2() {return eccentricity2;}
     void setRnp(double x) {rnp=x;}
     double getRnp() {return rnp;}
-    void setPsi(double x) {Psi=x;}
-    double getPsi() {return Psi;}
     void setSmearingWidth(double x) {smearingWidth=x;}
     double getSmearingWidth() {return smearingWidth;}
-    //void setMPIRank(int x) {MPIrank=x;}
-    //int getMPIRank() {return MPIrank;}
-    //void setMPISize(int x) {MPIsize=x;}
-    //int getMPISize() {return MPIsize;}
     void setSuccess(int x) {success=x;}
     int getSuccess() {return success;}
     void setRmax(double x) {rmax=x;}
@@ -278,20 +214,10 @@ class Parameters
     int getRunWithLocalQs() {return runWithLocalQs;}
     void setLinearb(int x) {linearb=x;};
     int getLinearb() {return linearb;}
-    void setWriteOutputs(int x) {writeOutputs=x;};
-    int getWriteOutputs() {return writeOutputs;}
-    void setWriteEvolution(int x) {writeEvolution=x;};
-    int getWriteEvolution() {return writeEvolution;}
     void setNucleonPositionsFromFile(int x) {nucleonPositionsFromFile=x;}
     int getNucleonPositionsFromFile() {return nucleonPositionsFromFile;}
-    void setInverseQsForMaxTime(int x) {inverseQsForMaxTime=x;};
-    int getInverseQsForMaxTime() {return inverseQsForMaxTime;}
-    void setUseFatTails(int x) {useFatTails=x;}
-    int getUseFatTails() {return useFatTails;}
     void setSmearQs(int x) {smearQs=x;}
     int getSmearQs() {return smearQs;}
-    void setReadMultFromFile(int x) {readMultFromFile=x;}
-    int getReadMultFromFile() {return readMultFromFile;}
     void setGaussianWounding(int x) {gaussianWounding=x;}
     int getGaussianWounding() {return gaussianWounding;}
     void setUsePseudoRapidity(int x) {usePseudoRapidity=x;}

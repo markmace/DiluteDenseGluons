@@ -74,11 +74,6 @@ class Init {
     void setColorChargeDensity(GIPSLattice *lat, Parameters *param, Random *random, Glauber *glauber,string OutDirectory,int RNGSEED,int OUTPUT_FLAG);
     void setColorChargeDensityMVTarget(GIPSLattice *lat, Parameters *param, Random *random, Glauber *glauber,string OutDirectory,int RNGSEED,int OUTPUT_FLAG);
 
-//    void setV(Lattice *lat, Group* group, Parameters *param, Random* random, Glauber *glauber);
-//    void readV(Lattice *lat, Group* group, Parameters *param);
-    // void eccentricity(Lattice *lat, Group *group, Parameters *param, Random *random, Glauber *glauber);
-//    void multiplicity(Lattice *lat, Group *group, Parameters *param, Random *random, Glauber *glauber);
-    
 };
 
 #endif // Init_H

@@ -9,12 +9,12 @@ namespace Observables{
     // SINGLE INTEGRATED SPECTRA //
     void DetermineIntegratedDistribution(CVectorFields *OmS,CVectorFields *OmA){
         
+        // TO DO -- MAKE COMMANDLINE //
         const INT NumOfkConfigs=1;
-
-        DOUBLE kIR[NumOfkConfigs]={0.3}; // [GeV]
+        DOUBLE kIR[NumOfkConfigs]={0.3}; // [GeV] -- NEEDS TO BE SET AT COMPILE TIME //
         DOUBLE kUV[NumOfkConfigs]={3.0}; // [GeV]
         
-        // CREATE OUTPUT STREAM FOR SINGLE INCLUSIVE DISTRIBUTION //
+        // CREATE OUTPUT STREAM FOR INTEGRATED DISTRIBUTION //
         std::ofstream SIOutStream; SIOutStream.open(StringManipulation::StringCast(IO::OutputDirectory,"IntegratedSpectrumID",MY_MPI_RNG_SEED,".txt").c_str());
         
         // LOOP OVER LIMITS //

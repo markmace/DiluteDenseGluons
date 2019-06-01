@@ -1227,9 +1227,6 @@ void Init::setColorChargeDensity(GIPSLattice *lat,Parameters *param,Random *rand
                 averageQs2min2 += g2mu2B*param->getQsmuRatioB()*param->getQsmuRatioB()/a/a*hbarc*hbarc*param->getg()*param->getg();
             }
             
-            // if( param->getWriteOutputs() == 1 )
-            //   fout << x << " " << y << " " << " " << outvalue << endl;
-            
             for (int i = 0; i<A1; i++)
             {
                 xm = nucleusA.at(i).x;
@@ -1964,9 +1961,6 @@ void Init::setColorChargeDensityMVTarget(GIPSLattice *lat,Parameters *param,Rand
                 averageQs2min2 += g2mu2B*param->getQsmuRatioB()*param->getQsmuRatioB()/a/a*hbarc*hbarc*param->getg()*param->getg();
             }
             
-            // if( param->getWriteOutputs() == 1 )
-            //   fout << x << " " << y << " " << " " << outvalue << endl;
-            
             for (int i = 0; i<A1; i++){
                 
                 xm = nucleusA.at(i).x;
@@ -2179,7 +2173,6 @@ void Init::init(GIPSLattice *lat,Group *group,Parameters *param,Random *random,G
     
     int maxIterations = 100000;
     int N = param->getSize();
-    int Ny= param->getNy();
     int locNc = param->getNc();
     int bins = param->getSize();
     int ir;
@@ -2241,14 +2234,12 @@ void Init::init(GIPSLattice *lat,Group *group,Parameters *param,Random *random,G
     double dr=a;
     double rtrAT2[bins];
     double epsilon;
-    double m = param->getm(); //GeV
     double lambda;
     double trATA[N*N];
     double avgEps;
     double avgEpsMag;
     double avgEpsEl;
     
-    m=m*a/hbarc;
     //  cerr << "m_lat =" << m << endl;
     
     
