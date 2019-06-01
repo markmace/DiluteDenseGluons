@@ -1,0 +1,19 @@
+# EXAMPLE COMPILE FILE FOR DILUTE DENSE SOLVER #
+GSL_INC_DIR=/opt/local/include
+GSL_LIB_DIR=/opt/local/lib
+FFTW_INC_DIR=/usr/local/Cellar/fftw/3.3.8/include
+FFTW_LIB_DIR=/usr/local/Cellar/fftw/3.3.8/lib
+INC_DIR=/usr/local/include
+
+FLAGS=-lmpi -lgsl -lgslcblas -fopenmp -lfftw3_threads -lfftw3 -llapack
+
+MAIN_FILE=src/Main.cpp
+
+EXTRA_FILES=src/INITIALCONDITIONS/GlauberIPSat.cpp src/INITIALCONDITIONS/FFT.cpp src/INITIALCONDITIONS/Matrix.cpp src/INITIALCONDITIONS/Setup.cpp src/INITIALCONDITIONS/Init.cpp src/INITIALCONDITIONS/Random.cpp src/INITIALCONDITIONS/Group.cpp src/INITIALCONDITIONS/GIPSLattice.cpp src/INITIALCONDITIONS/Cell.cpp src/INITIALCONDITIONS/Glauber.cpp src/INITIALCONDITIONS/Util.cpp src/INITIALCONDITIONS/Spinor.cpp
+
+EXECUTABLE=Simulation.exe
+
+all:
+	mpicxx -g -std=c++11 -Ofast ${MAIN_FILE} ${EXTRA_FILES} -o ${EXECUTABLE} -I${GSL_INC_DIR} -L${GSL_LIB_DIR} -I${INC_DIR} -I${FFTW_LIB_DIR} -L${FFTW_LIB_DIR} ${FLAGS}
+
+	
