@@ -165,11 +165,11 @@ namespace Observables{
             SIloc+=FourierSpace::OmegaS->GetP(BoundaryIndex(Lattice::N[0]-kXIndex),BoundaryIndex(Lattice::N[1]-kYIndex),a)*FourierSpace::OmegaS->GetP(kXIndex,kYIndex,a)+FourierSpace::OmegaA->GetP(BoundaryIndex(Lattice::N[0]-kXIndex),BoundaryIndex(Lattice::N[1]-kYIndex),a)*FourierSpace::OmegaA->GetP(kXIndex,kYIndex,a);
         }
         
-        // RE-NORMALIZE 1/(k^2 (2\pi)^3 L^2) //
+        // RE-NORMALIZE 1/(k^2 (2\pi)^3 ) //
         DOUBLE kSqr=IndexTokSqr(kXIndex,kYIndex);
-        SIloc*=1.0/((kSqr+1e-9)*pow(2.0*PI,3)*Lattice::SizeX*Lattice::SizeY);
+        SIloc*=1.0/((kSqr+1e-9)*pow(2.0*PI,3));
         
-        return SIloc;
+        return SIloc; // GeV^-2 //
         
     }
     
@@ -242,8 +242,8 @@ namespace Observables{
                 Integrate+=Sum;
             } // END qX LOOP //
         } // END qY LOOP //
-        
-        return ComplexI*0.5*Integrate/(kSqr*std::pow(Lattice::SizeX*Lattice::SizeY,2)*std::pow(2.0*PI,3)); // PER UNIT LENGTH //
+        // [Measure ~ d^2p ][ Integrate~ \Omega^4/k^2 ] [1/k^2]
+        return ComplexI*0.5*Integrate*invfmtoGeV*invfmtoGeV/(kSqr*Lattice::SizeX*Lattice::SizeY*std::pow(2.0*PI,3)); // GeV^-2 //
         
     }
 }

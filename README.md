@@ -1,4 +1,4 @@
-# DILUTE-DENSE GLUOSN #
+# DILUTE-DENSE GLUONS #
 # README #
 
 ### What is this repository for? ###
