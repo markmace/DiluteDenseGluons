@@ -94,7 +94,7 @@ namespace InitialConditions{
                             
                         }
                     }
-                    else{
+                    else{ // REGULATOR MASS OPTION //
                         
                         for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                             // SAVE MOMENTUM SPACE RHO //
@@ -153,10 +153,6 @@ namespace InitialConditions{
                     COPY_SUNcMatrix(U->Get(x,y,0),Buffer);
                 }
             }
-            
-            // OPTION TO MEASURE Qs AT EACH ADDITIONAL SLICE IN Qs //
-            //GetQsT(TargetFields::U);
-            // END OPTION //
             
         }
         
@@ -236,7 +232,7 @@ namespace InitialConditions{
                         
                     }
                 }
-                else{
+                else{ // REGULATOR MASS OPTION //
                     
                     for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                         // SAVE MOMENTUM SPACE RHO //
@@ -245,7 +241,6 @@ namespace InitialConditions{
                         // SAVE RHO/DERIVATIVE //
                         DOUBLE mLatSqr=RegMass*RegMass*GeVtoinvfm*GeVtoinvfm;  // fm^-2 //
                         FourierSpace::RhoP->SetP(pXIndex,pYIndex,a,rhoTemp/(DerivativeFactorSqr+mLatSqr)); // fm^2 //
-                        
                         
                     }
                     
@@ -273,7 +268,7 @@ namespace InitialConditions{
         for(INT y=0;y<ProjSolution::A->N[1];y++){
             for(INT x=0;x<ProjSolution::A->N[0];x++){
                 for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
-                    ProjSolution::A->Get(x,y,0,a)[0]=real(FourierSpace::RhoP->GetX(x,y,a));
+                    ProjSolution::A->Get(x,y,0,a)[0]=real(FourierSpace::RhoP->GetX(x,y,a)); // DIMLESS //
                 }
             }
         }
@@ -281,13 +276,13 @@ namespace InitialConditions{
     }
     
     // GENERAL ROUTINE FOR SETTING GLAUBER + IP-Sat FIELDS //
-    void SetbGlauberIPSat(long int RNG_SEED){
+    void SetGlauberIPSat(long int RNG_SEED){
         
         ///////////////////////////////
         //   SET INITIAL CONDITIONS  //
         ///////////////////////////////
         
-        //std::cout << "## SETTING GLAUBER+IP-Sat CONDITIONS " << std::endl;
+        //std::cout << "# SETTING GLAUBER+IP-Sat CONDITIONS " << std::endl;
         
         // SAMPLE NUCLEON POSITIONS AND DETMERINE RHOS //
         //std::cout << "# SAMPLING NUCLEI " << std::endl;
@@ -339,7 +334,7 @@ namespace InitialConditions{
         
         //std::cout << "# FINISHED SETTING TARGET FIELDS " << std::endl;
         
-        std::cout << "## FINISHED SETTING GLAUBER+IP-Sat INITIAL CONDITIONS" << std::endl;
+        std::cout << "# FINISHED SETTING GLAUBER+IP-Sat INITIAL CONDITIONS" << std::endl;
         
         
     }

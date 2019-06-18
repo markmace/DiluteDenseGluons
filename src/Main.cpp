@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PROGRAM TO COMPUTE PARTICLE PRODUCTION IN NUCLEAR COLLISONS IN THE DILUTE DENSE CGC FRAMEWORK //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#define IC_FLAG GIPS_FLAG // OPTIONS : MV MODEL -- MV_FLAG, GLAUBER+IP-SAT -- GIPS_FLAG
+#define IC_FLAG MV_FLAG // OPTIONS : MV MODEL -- MV_FLAG, GLAUBER+IP-SAT -- GIPS_FLAG
 
 #include <iostream>
 #include <string>
@@ -57,7 +57,7 @@ DOUBLE dkStep=0.5; // STEP IN MOMENTUM [GeV]
 DOUBLE kRefMin=1.0; // MINIMUM REF BIN [GeV]
 DOUBLE kRefMax=2.0; // MINIMUM REF BIN [GeV]
 
-INT kDIF_FLAG=2; // DIFFERENTIAL HARMONIC : 0 -- NO, 1 -- \phi dk k , 2 -- \phi k, 3 -- \phi //
+INT kDIF_FLAG=2; // DIFFERENTIAL HARMONIC : 0 -- NO, 1 -- e^in\phi dk k , 2 -- e^in\phi k //
 INT kINT_FLAG=1; // INTEGRATED HARMONIC : 0 -- N0, 1 -- YES //
 
 // OPTION FOR OUTPUT OF CONFIGURATIONS -- CAN BE SET IN COMMANDLINE //
@@ -66,9 +66,10 @@ INT OUTPUT_FLAG=0;
 // OPTION FOR CALCULATION OF ASYMMETRIC PART -- NEEDED FOR ODD HARMONICS -- CAN BE SET IN COMMANDLINE //
 INT AS_FLAG=0;
 
-// CONSTANT COLOR CHARGE DENSITY -- CAN SET IN COMMANDLINE//
+// CONSTANT COLOR CHARGE DENSITY AND SIZE -- CAN SET IN COMMANDLINE//
 #if IC_FLAG==MV_FLAG
 DOUBLE g2muP=0.25; DOUBLE g2muT=1.0;
+INT PROJ_FLAG=0; // 0 -- p, 1 -- d, 2 -- infinite //
 #endif
 
 // DEFINE RANDOM NUMBER GENERATOR //
@@ -112,6 +113,7 @@ INT NumberOfConfigurations=1; // CAN BE SET IN COMMANDLINE //
 #include "OBSERVABLES/MultiplicityMeasurement.cpp"
 #include "OBSERVABLES/DifferentialDistribution.cpp"
 #include "OBSERVABLES/IntegratedDistribution.cpp"
+#include "OBSERVABLES/FullDistribution.cpp"
 
 // OUTPUT DIRECTORY -- CAN BE SET IN COMMANDLINE //
 std::string OutputDirectory;
@@ -127,7 +129,7 @@ void Run(int argc,char **argv,INT MPI_RNG_SEED){
 
     MY_MPI_RNG_SEED=MPI_RNG_SEED;
 
-    std::cerr << "## SEED=" << MY_MPI_RNG_SEED << std::endl;
+    std::cerr << "# SEED=" << MY_MPI_RNG_SEED << std::endl;
     
     //INITIALIZE RANDOM NUMBER GENERATOR //
     RandomNumberGenerator::Init(MY_MPI_RNG_SEED);
@@ -152,7 +154,7 @@ void Run(int argc,char **argv,INT MPI_RNG_SEED){
     
     // SET GLAUBER+IP-SAT INITIAL FIELDS //
     #if IC_FLAG==GIPS_FLAG
-    InitialConditions::SetbGlauberIPSat(MPI_RNG_SEED);
+    InitialConditions::SetGlauberIPSat(MPI_RNG_SEED);
     #endif
     
     // CLEANUP 2mu FEILDS, AND RHO FIELDS //
@@ -167,19 +169,26 @@ void Run(int argc,char **argv,INT MPI_RNG_SEED){
     Observables::FourierTransformOmegas(OmegaS::O,OmegaA::O);
 
     // MEASURE MULTIPLICITY //
+    // DO NOT REMOVE -- CRITICAL FOR CALCULATING ALL HARMONICS //
     Observables::MeasureMultiplicity();
 
+    // OPTION FOR SINGLE INCLUSIVE DISTRIBUTION OUTPUT
+    Observables::DetermineFullDistribution();
+
     // COMPUTE DIFFERENTIAL AND/OR INTEGRATED HARMONICS FOR A GIVEN SET OF RHOS //
-    if(kDIF_FLAG==1 || kDIF_FLAG==2 || kDIF_FLAG==3){
-        // DIFFERENT SCHEMES : 1 -- \phi dk k , 2 -- \phi k, 3 -- \phi  //
+    if(kDIF_FLAG==1 || kDIF_FLAG==2){
+        // DIFFERENT SCHEMES : 1 -- \phi dk k , 2 -- \phi k //
         // STANDARD CHOICE IS 1 //
         Observables::DetermineDifferentialDistribution();
+    }
+    else{
+        std::cerr << "# NOT COMPUTING DIFFERENTIAL HARMONICS " << std::endl;
     }
     if(kINT_FLAG==1){
         Observables::DetermineIntegratedDistribution();
     }
     else{
-        std::cerr << "# NOT COMPUTING ANY HARMONICS " << std::endl;
+        std::cerr << "# NOT COMPUTING INTEGRATED HARMONICS " << std::endl;
     }
     
     // CLEAN-UP TARGET AND PROJECTILE FIELDS, OMEGAS, SCALAR //
@@ -263,7 +272,7 @@ int main(int argc,char **argv){
         Run(argc,argv,GLOBAL_RNG_SEED+MPIBasic::ID);
 
         // COMMADNLINE NOTIFICATION //
-        std::cerr << "## COMPLETED " << GLOBAL_RNG_SEED+MPIBasic::ID << std::endl;
+        std::cerr << "# COMPLETED " << GLOBAL_RNG_SEED+MPIBasic::ID << std::endl;
 
     }
 

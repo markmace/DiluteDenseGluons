@@ -73,13 +73,6 @@ namespace Observables{
                                 v3ALL+=k2Abs*AsSIloc*exp(3.0*ComplexI*Phik2);
                                 v4ALL+=k2Abs*SIloc*exp(4.0*ComplexI*Phik2);
                             }
-                            else if(kDIF_FLAG==3){
-                                v0ALL+=real(SIloc);
-                                v1ALL+=AsSIloc*exp(1.0*ComplexI*Phik2);
-                                v2ALL+=SIloc*exp(2.0*ComplexI*Phik2);
-                                v3ALL+=AsSIloc*exp(3.0*ComplexI*Phik2);
-                                v4ALL+=SIloc*exp(4.0*ComplexI*Phik2);
-                            }
                             else{
                                 std::cerr << "# NO K-INTEGRATION SCHEME DENOTED!!!" << std::endl;
                                 exit(0);
@@ -92,7 +85,7 @@ namespace Observables{
                 }
             }
         }
-
+        
         // LOOP THROUGH MOMENTA OF INTEREST //
         for(INT nk=0; nk<=kMaxIndex; nk++){
 
@@ -148,27 +141,19 @@ namespace Observables{
                                 // DEFINE AZIMUTHAL ANGLE //
                                 DOUBLE Phik2=atan2(k2YValue,k2XValue);
 
-
-                                if(kINT_FLAG==0){
+                                if(kDIF_FLAG==0){
                                     v0+=real(k2Abs*dkBin*SIloc);
                                     v1+=k2Abs*dkBin*AsSIloc*exp(1.0*ComplexI*Phik2);
                                     v2+=k2Abs*dkBin*SIloc*exp(2.0*ComplexI*Phik2);
                                     v3+=k2Abs*dkBin*AsSIloc*exp(3.0*ComplexI*Phik2);
                                     v4+=k2Abs*dkBin*SIloc*exp(4.0*ComplexI*Phik2);
                                 }
-                                else if(kINT_FLAG==1){
+                                else if(kDIF_FLAG==1){
                                     v0+=real(k2Abs*SIloc);
                                     v1+=k2Abs*AsSIloc*exp(1.0*ComplexI*Phik2);
                                     v2+=k2Abs*SIloc*exp(2.0*ComplexI*Phik2);
                                     v3+=k2Abs*AsSIloc*exp(3.0*ComplexI*Phik2);
                                     v4+=k2Abs*SIloc*exp(4.0*ComplexI*Phik2);
-                                }
-                                else if(kINT_FLAG==2){
-                                    v0+=real(SIloc);
-                                    v1+=AsSIloc*exp(1.0*ComplexI*Phik2);
-                                    v2+=SIloc*exp(2.0*ComplexI*Phik2);
-                                    v3+=AsSIloc*exp(3.0*ComplexI*Phik2);
-                                    v4+=SIloc*exp(4.0*ComplexI*Phik2);
                                 }
                                 else{
                                     std::cerr << "# NO K-INTEGRATION SCHEME DENOTED!!!" << std::endl;
@@ -199,12 +184,12 @@ namespace Observables{
 
     void DetermineDifferentialDistribution(){
 
-        std::cerr << "## CONSTRUCTING DIFFERENTIAL DISTRIBUTION" << std::endl;
+        std::cerr << "# CONSTRUCTING DIFFERENTIAL DISTRIBUTION" << std::endl;
 
         // COMPUTE FOURIER TRANSFORM OF OMEGAS AND DETERMINE SINGLE PARTICLE SPECTRA AND STORE TO FILE//
         DetermineDifferentialDistribution(OmegaS::O,OmegaA::O);
 
-        std::cerr << "## FINISHED CONSTRUCTING DIFFERENTIAL DISTRIBUTION" << std::endl;
+        std::cerr << "# FINISHED CONSTRUCTING DIFFERENTIAL DISTRIBUTION" << std::endl;
 
     }
 

@@ -122,12 +122,12 @@ namespace Observables{
 
     void DetermineIntegratedDistribution(){
         
-        std::cerr << "## CONSTRUCTING INTEGRATED DISTRIBUTION" << std::endl;
+        std::cerr << "# CONSTRUCTING INTEGRATED DISTRIBUTION" << std::endl;
         
         // COMPUTE FOURIER TRANSFORM OF OMEGAS AND DETERMINE SINGLE PARTICLE SPECTRA AND STORE TO FILE//
         DetermineIntegratedDistribution(OmegaS::O,OmegaA::O);
         
-        std::cerr << "## FINISHED CONSTRUCTING INTEGRATED DISTRIBUTION" << std::endl;
+        std::cerr << "# FINISHED CONSTRUCTING INTEGRATED DISTRIBUTION" << std::endl;
         
     }
     

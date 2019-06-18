@@ -105,7 +105,7 @@ void Init::sampleTA(Parameters *param, Random* random, Glauber* glauber){
                     rv.collided=0;
                     nucleusA.push_back(rv);
                     A++;
-                    //std::cerr << "### A=" << A << ", x=" << rv.x << ", y=" << rv.y << endl;
+                    //std::cerr << "# A=" << A << ", x=" << rv.x << ", y=" << rv.y << endl;
                 }
             }
             
@@ -314,7 +314,7 @@ void Init::sampleProjectileTA(Parameters *param, Random* random, Glauber* glaube
                     rv.collided=0;
                     nucleusA.push_back(rv);
                     A++;
-                    //std::cerr << "### A=" << A << ", x=" << rv.x << ", y=" << rv.y << endl;
+                    //std::cerr << "# A=" << A << ", x=" << rv.x << ", y=" << rv.y << endl;
                 }
             }
             
@@ -382,7 +382,7 @@ void Init::readNuclearQs(Parameters *param){
                 }
                 else
                 {
-                    std::cerr << "# CRITICAL ERROR  -- END OF QS FILE REACHED PREMATURELY" << std::endl;
+                    std::cerr << "#### CRITICAL ERROR  -- END OF QS FILE REACHED PREMATURELY" << std::endl;
                     exit(1);
                 }
             }
@@ -631,7 +631,7 @@ void Init::setColorChargeDensity(GIPSLattice *lat,Parameters *param,Random *rand
     
     // MV TARGET INITIAL CONDITIONS -- INFINITE NUCLEUS //
     if(param->getUseNucleus() == 2){
-        std::cerr << "## CATASTROPHIC FAILURE!!" << std::endl;
+        std::cerr << "#### CATASTROPHIC FAILURE!!" << std::endl;
         exit(0);
     }
     

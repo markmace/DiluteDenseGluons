@@ -32,6 +32,7 @@ void CreateInfoFile(INT SEED){
     #endif
     
     #if IC_FLAG==MV_FLAG
+    InfoStream << "#PROJ_FLAG=" << PROJ_FLAG << std::endl;
     InfoStream << "#g2muP=" << g2muP << " UNIFORM " << std::endl;
     InfoStream << "#g2muT=" << g2muT << " UNIFORM " << std::endl;
     

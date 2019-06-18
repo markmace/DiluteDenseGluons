@@ -21,14 +21,14 @@ namespace Observables{
     // GENERAL PURPOSE FUNCTIONS FOR CONVERTING INDICES TO MOMENTA //
     DOUBLE IndexTok(INT Index){
         DOUBLE karg=2.0*PI*Index/(Lattice::N[0]*Lattice::a[0]);
-        DOUBLE kValue=1.0/Lattice::a[0]*sin(karg*Lattice::a[0])*invfmtoGeV;
+        DOUBLE kValue=1.0/Lattice::a[0]*sin(karg*Lattice::a[0])*invfmtoGeV; // GeV //
         return kValue;
     }
     
     DOUBLE IndexTokSqr(INT kXIndex,INT kYIndex){
         DOUBLE kXarg=2.0*PI*kXIndex/(Lattice::N[0]*Lattice::a[0]);
         DOUBLE kYarg=2.0*PI*kYIndex/(Lattice::N[1]*Lattice::a[1]);
-        return (pow(2.0/Lattice::a[0]*sin(kXarg*Lattice::a[0]/2.0),2)+pow(2.0/Lattice::a[0]*sin(kYarg*Lattice::a[1]/2.0),2))*invfmtoGeV*invfmtoGeV;
+        return (pow(2.0/Lattice::a[0]*sin(kXarg*Lattice::a[0]/2.0),2)+pow(2.0/Lattice::a[0]*sin(kYarg*Lattice::a[1]/2.0),2))*invfmtoGeV*invfmtoGeV; // GeV^2 //
     }
 
     
@@ -48,8 +48,8 @@ namespace Observables{
                 for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
                     
                     // PROJECTILE DERIVATIVES //
-                    double dUdxProj=0.5*(ProjSolution::A->Get(BoundaryIndex(x+1),y,0,a)[0]-ProjSolution::A->Get(BoundaryIndex(x-1),y,0,a)[0])/Lattice::a[0];
-                    double dUdyProj=0.5*(ProjSolution::A->Get(x,BoundaryIndex(y+1),0,a)[0]-ProjSolution::A->Get(x,BoundaryIndex(y-1),0,a)[0])/Lattice::a[1];
+                    double dUdxProj=0.5*(ProjSolution::A->Get(BoundaryIndex(x+1),y,0,a)[0]-ProjSolution::A->Get(BoundaryIndex(x-1),y,0,a)[0])/Lattice::a[0]; // fm^-1 //
+                    double dUdyProj=0.5*(ProjSolution::A->Get(x,BoundaryIndex(y+1),0,a)[0]-ProjSolution::A->Get(x,BoundaryIndex(y-1),0,a)[0])/Lattice::a[1]; // fm^-1 //
                     
                     SU_Nc_FUNDAMENTAL_FORMAT Wx[SUNcGroup::MatrixSize];
                     SU_Nc_FUNDAMENTAL_FORMAT Wy[SUNcGroup::MatrixSize];
@@ -80,7 +80,7 @@ namespace Observables{
                     for(INT alpha=0;alpha<Nc;alpha++){
                         for(INT beta=0;beta<Nc;beta++){
                             
-                            Wx[SUNcGroup::MatrixIndex(alpha,beta)]=DOUBLE(0.5)/Lattice::a[0]*(tmpPlus[SUNcGroup::MatrixIndex(alpha,beta)]-tmpMinus[SUNcGroup::MatrixIndex(alpha,beta)]);
+                            Wx[SUNcGroup::MatrixIndex(alpha,beta)]=DOUBLE(0.5)/Lattice::a[0]*(tmpPlus[SUNcGroup::MatrixIndex(alpha,beta)]-tmpMinus[SUNcGroup::MatrixIndex(alpha,beta)]); // fm^-1 //
                         }
                     }
                     
@@ -101,7 +101,7 @@ namespace Observables{
                     for(INT alpha=0;alpha<Nc;alpha++){
                         for(INT beta=0;beta<Nc;beta++){
                             
-                            Wy[SUNcGroup::MatrixIndex(alpha,beta)]=DOUBLE(0.5)/Lattice::a[0]*(tmpPlus[SUNcGroup::MatrixIndex(alpha,beta)]-tmpMinus[SUNcGroup::MatrixIndex(alpha,beta)]);
+                            Wy[SUNcGroup::MatrixIndex(alpha,beta)]=DOUBLE(0.5)/Lattice::a[0]*(tmpPlus[SUNcGroup::MatrixIndex(alpha,beta)]-tmpMinus[SUNcGroup::MatrixIndex(alpha,beta)]); // fm^-1 //
                         }
                     }
                     
@@ -110,8 +110,8 @@ namespace Observables{
                     // SET OMEGA MATRICES //
                     for(INT alpha=0;alpha<Nc;alpha++){
                         for(INT beta=0;beta<Nc;beta++){
-                            OmegaSBuffer[SUNcGroup::MatrixIndex(alpha,beta)]+=dUdxProj*Wx[SUNcGroup::MatrixIndex(alpha,beta)]+dUdyProj*Wy[SUNcGroup::MatrixIndex(alpha,beta)];
-                            OmegaABuffer[SUNcGroup::MatrixIndex(alpha,beta)]+=dUdxProj*Wy[SUNcGroup::MatrixIndex(alpha,beta)]-dUdyProj*Wx[SUNcGroup::MatrixIndex(alpha,beta)];
+                            OmegaSBuffer[SUNcGroup::MatrixIndex(alpha,beta)]+=dUdxProj*Wx[SUNcGroup::MatrixIndex(alpha,beta)]+dUdyProj*Wy[SUNcGroup::MatrixIndex(alpha,beta)]; // fm^-2 //
+                            OmegaABuffer[SUNcGroup::MatrixIndex(alpha,beta)]+=dUdxProj*Wy[SUNcGroup::MatrixIndex(alpha,beta)]-dUdyProj*Wx[SUNcGroup::MatrixIndex(alpha,beta)]; // fm^-2 //
                         }
                     }
                     
@@ -143,8 +143,9 @@ namespace Observables{
         for(INT y=0;y<Lattice::N[1];y++){
             for(INT x=0;x<Lattice::N[0];x++){
                 for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
-                    FourierSpace::OmegaS->SetXc(x,y,a,OmS->Get(x,y,0,a)[0]*Lattice::a[0]*Lattice::a[1]);
-                    FourierSpace::OmegaA->SetXc(x,y,a,OmA->Get(x,y,0,a)[0]*Lattice::a[0]*Lattice::a[1]);
+                    // NORMALIZATION FOR FFT BELOW -- d^2p-> a^2 //
+                    FourierSpace::OmegaS->SetXc(x,y,a,OmS->Get(x,y,0,a)[0]*Lattice::a[0]*Lattice::a[1]); // DIMLESS //
+                    FourierSpace::OmegaA->SetXc(x,y,a,OmA->Get(x,y,0,a)[0]*Lattice::a[0]*Lattice::a[1]);  // fm^-2 //
                     
                 }
             }
@@ -162,12 +163,12 @@ namespace Observables{
         // SUM OVER ALEGBRA INDICES OF |OMEGA_S|^2+|OMEGA_A|^2 TO GET SINGLE INCLUSIVE//
         for(INT a=0;a<SUNcAlgebra::VectorSize;a++){
             
-            SIloc+=FourierSpace::OmegaS->GetP(BoundaryIndex(Lattice::N[0]-kXIndex),BoundaryIndex(Lattice::N[1]-kYIndex),a)*FourierSpace::OmegaS->GetP(kXIndex,kYIndex,a)+FourierSpace::OmegaA->GetP(BoundaryIndex(Lattice::N[0]-kXIndex),BoundaryIndex(Lattice::N[1]-kYIndex),a)*FourierSpace::OmegaA->GetP(kXIndex,kYIndex,a);
+            SIloc+=FourierSpace::OmegaS->GetP(BoundaryIndex(Lattice::N[0]-kXIndex),BoundaryIndex(Lattice::N[1]-kYIndex),a)*FourierSpace::OmegaS->GetP(kXIndex,kYIndex,a)+FourierSpace::OmegaA->GetP(BoundaryIndex(Lattice::N[0]-kXIndex),BoundaryIndex(Lattice::N[1]-kYIndex),a)*FourierSpace::OmegaA->GetP(kXIndex,kYIndex,a); // DIMLESS //
         }
         
         // RE-NORMALIZE 1/(k^2 (2\pi)^3 ) //
         DOUBLE kSqr=IndexTokSqr(kXIndex,kYIndex);
-        SIloc*=1.0/((kSqr+1e-9)*pow(2.0*PI,3));
+        SIloc*=1.0/((kSqr+1e-9)*pow(2.0*PI,3)); // GeV^-2 //
         
         return SIloc; // GeV^-2 //
         
@@ -242,8 +243,8 @@ namespace Observables{
                 Integrate+=Sum;
             } // END qX LOOP //
         } // END qY LOOP //
-        // [Measure ~ d^2p ][ Integrate~ \Omega^4/k^2 ] [1/k^2]
-        return ComplexI*0.5*Integrate*invfmtoGeV*invfmtoGeV/(kSqr*Lattice::SizeX*Lattice::SizeY*std::pow(2.0*PI,3)); // GeV^-2 //
+        // CONSTANTS * [Measure ~ d^2p ][1/k^2][ Integrate~ \Omega^4/k^2 ] 
+        return ComplexI*0.5/(std::pow(2.0*PI,3))*(invfmtoGeV/Lattice::SizeX)*(invfmtoGeV/Lattice::SizeY)*1.0/kSqr*Integrate; // GeV^-2 //
         
     }
 }

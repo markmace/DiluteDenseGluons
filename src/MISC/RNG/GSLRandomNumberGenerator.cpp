@@ -23,7 +23,7 @@ namespace RandomNumberGenerator{
         
     }
     
-    //UNIFORM DISTRIBUTED RANDOM NUMBER
+    // UNIFORM DISTRIBUTED RANDOM NUMBER
     DOUBLE rng(){
         return gsl_rng_uniform(Generator);
     }

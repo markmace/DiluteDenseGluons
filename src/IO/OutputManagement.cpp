@@ -11,7 +11,7 @@ namespace  IO {
         
         OutputDirectory=StringManipulation::StringCast(x,"/");
         
-        //std::cer << "## OUTPUT DIRECTORY IS " << OutputDirectory <<  std::endl;
+        //std::cer << "# OUTPUT DIRECTORY IS " << OutputDirectory <<  std::endl;
     }
 
 }

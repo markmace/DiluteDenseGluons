@@ -219,7 +219,7 @@ namespace SUNcAlgebra{
             int SUCCESS=Diagonalization3x3::Eigensystem(A,U,eV);
 
             if(SUCCESS==-1){
-                std::cerr << "### CRITICAL FAILURE -- DIAGONALIZATION FAILED!" << std::endl;
+                std::cerr << "#### CRITICAL FAILURE -- DIAGONALIZATION FAILED!" << std::endl;
                 exit(0);
             }
 

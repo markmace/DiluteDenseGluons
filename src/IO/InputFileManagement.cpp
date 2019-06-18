@@ -11,7 +11,7 @@ namespace  IO {
         
         InputFile=StringManipulation::StringCast(x);
         
-        //std::cerr << "## INPUT FILE IS " << InputFile <<  std::endl;
+        //std::cerr << "# INPUT FILE IS " << InputFile <<  std::endl;
     }
     
 }
