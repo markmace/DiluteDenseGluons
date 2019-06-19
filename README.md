@@ -15,7 +15,7 @@
 * Has run on Mac OSX 10.8 and newer, NERSC
 
 ### How do I run? ###
-* For the executable created, there are a large number of inputs which can be, and typically are, specified at run-time (see src/CommandlineParameters.cpp). There are also input parameters which must be specified in a separate input file (the name of which is specified also at run-time): an example is included with git repo. The lattice size and spacing are the only common parameters between the input file and the commandline inputs, both of which must be set. WORK in PROGRESS
+* For the executable created, there are a large number of inputs which can be, and typically are, specified at run-time (see src/CommandlineParameters.cpp). If using the Glauber+IP-Sat module, there are additional input parameters in a separate input file (the name of which is specified also at run-time): an example is included with git repo. The lattice size and spacing are the only common parameters between the input file and the commandline inputs, both of which must be set.
 
 ### Who do I talk to? ###
 
