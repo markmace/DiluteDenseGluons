@@ -9,8 +9,8 @@
 ### How do I get set up? ###
 
 * Compiles with C++ with MPI and OpenMP
-* MPI is only used to run different seeds simulanteously on different cores. 
-* Currently has no Open-MP optimization -- under construction with validation
+* MPI is used to run different seeds simulanteously on different cores. 
+* Currently Open-MP optimization turned off -- work in progress to validate
 * Dependencies: GSL, FFTW3 with multi-threading, LAPACK
 * Has run on Mac OSX 10.8 and newer, NERSC
 
