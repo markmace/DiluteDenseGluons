@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PROGRAM TO COMPUTE PARTICLE PRODUCTION IN NUCLEAR COLLISONS IN THE DILUTE DENSE CGC FRAMEWORK //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#define IC_FLAG MV_FLAG // OPTIONS : MV MODEL -- MV_FLAG, GLAUBER+IP-SAT -- GIPS_FLAG
+#define IC_FLAG IPG_FLAG // OPTIONS : MV MODEL -- MV_FLAG, GLAUBER+IP-SAT -- GIPS_FLAG
 
 #include <iostream>
 #include <string>
@@ -34,6 +34,9 @@
 
 // DEFINE SPECIFIC WILSON LINE AND VECTOR FIELD VARIABLES //
 #include "LATTICE/Fields.cpp"
+
+// DEFINE FOURIER SPACE VARIABLES //
+#include "LATTICE/FourierSpace.cpp"
 
 // HISTOGRAM //
 #include "MISC/HISTOGRAM/Histogram.cpp"

@@ -11,7 +11,7 @@ namespace Observables{
         
         // TO DO -- MAKE COMMANDLINE //
         const INT NumOfkConfigs=1;
-        DOUBLE kIR[NumOfkConfigs]={0.3}; // [GeV] -- NEEDS TO BE SET AT COMPILE TIME //
+        DOUBLE kIR[NumOfkConfigs]={0.3}; // [GeV] -- FUTURE : NEEDS TO BE SET AT COMPILE TIME //
         DOUBLE kUV[NumOfkConfigs]={3.0}; // [GeV]
         
         // CREATE OUTPUT STREAM FOR INTEGRATED DISTRIBUTION //
