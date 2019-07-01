@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PROGRAM TO COMPUTE PARTICLE PRODUCTION IN NUCLEAR COLLISONS IN THE DILUTE DENSE CGC FRAMEWORK //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#define IC_FLAG IPG_FLAG // OPTIONS : MV MODEL -- MV_FLAG, GLAUBER+IP-SAT -- GIPS_FLAG
+#define IC_FLAG GIPS_FLAG // OPTIONS : MV MODEL -- MV_FLAG, GLAUBER+IP-SAT -- GIPS_FLAG
 
 #include <iostream>
 #include <string>
@@ -129,6 +129,15 @@ void Run(int argc,char **argv,INT MPI_RNG_SEED){
     ///////////
     // SETUP //
     ///////////
+    #if IC_FLAG==GIPS_FLAG
+    std::cerr << "## RUNNING WITH GLAUBER IP-SAT MODE" << std::endl;
+    #elif IC_FLAG==MV_FLAG
+    std::cerr << "## RUNNING WITH MV-TARGET MODE" << std::endl;
+    #else
+    std::cerr << "## CRITICAL ERROR -- NO RUNNING MODE SPECIFIED" << std::endl;
+    exit(0);
+    #endif
+
 
     MY_MPI_RNG_SEED=MPI_RNG_SEED;
 
@@ -176,7 +185,7 @@ void Run(int argc,char **argv,INT MPI_RNG_SEED){
     Observables::MeasureMultiplicity();
 
     // OPTION FOR SINGLE INCLUSIVE DISTRIBUTION OUTPUT
-    Observables::DetermineFullDistribution();
+    //Observables::DetermineFullDistribution();
 
     // COMPUTE DIFFERENTIAL AND/OR INTEGRATED HARMONICS FOR A GIVEN SET OF RHOS //
     if(kDIF_FLAG==1 || kDIF_FLAG==2){
