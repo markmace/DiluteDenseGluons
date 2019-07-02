@@ -27,7 +27,7 @@ namespace InitialConditions{
         // LOOP OVER SLICES IN RAPIDITY //
         for(INT RapSlice=0;RapSlice<Lattice::NRap;RapSlice++){
             if(RapSlice%20==0){
-                std::cout << "# BEGINNING COMPUTATION FOR SLICE NRap=" << RapSlice << " OF " << Lattice::NRap << std::endl;
+                std::cerr << "# BEGINNING COMPUTATION FOR SLICE NRap=" << RapSlice << " OF " << Lattice::NRap << std::endl;
             }
             
             // SET TARGET RHO FIELDS /
@@ -186,7 +186,7 @@ namespace InitialConditions{
             }
         }
         
-        //std::cout << "# PERFORMING FOURIER TRANSFORM OF PROJECTILE RHO VARIABLES" << std::endl;
+        //std::cerr << "# PERFORMING FOURIER TRANSFORM OF PROJECTILE RHO VARIABLES" << std::endl;
         
         // FOURIER TRANSFORM RHOS TO MOMENTUM SPACE //
         FourierSpace::RhoP->ExecuteXtoP();
@@ -203,7 +203,7 @@ namespace InitialConditions{
         }
         
         // SET PROJECTILE RHO OVER DERIVATIVE //
-        #pragma omp parallel for collapse(2)
+        //#pragma omp parallel for collapse(2)
         for(INT pXIndex=0;pXIndex<Lattice::N[0];pXIndex++){
             for(INT pYIndex=0;pYIndex<Lattice::N[1];pYIndex++){
                 
@@ -282,10 +282,10 @@ namespace InitialConditions{
         //   SET INITIAL CONDITIONS  //
         ///////////////////////////////
         
-        //std::cout << "# SETTING GLAUBER+IP-Sat CONDITIONS " << std::endl;
+        //std::cerr << "# SETTING GLAUBER+IP-Sat CONDITIONS " << std::endl;
         
         // SAMPLE NUCLEON POSITIONS AND DETMERINE RHOS //
-        //std::cout << "# SAMPLING NUCLEI " << std::endl;
+        //std::cerr << "# SAMPLING NUCLEI " << std::endl;
         
         DOUBLE *Projectile_g2mu2=new DOUBLE[Lattice::N[0]*Lattice::N[1]];
         DOUBLE *Target_g2mu2=new DOUBLE[Lattice::N[0]*Lattice::N[1]];
@@ -311,30 +311,30 @@ namespace InitialConditions{
         delete[] Projectile_g2mu2;
         delete[] Target_g2mu2;
         
-        //std::cout << "# FINSIHED SAMPLING NUCLEI " << std::endl;
+        //std::cerr << "# FINSIHED SAMPLING NUCLEI " << std::endl;
         
         // OPTION FOR FILE OUTPUT OF RHOS //
         if(OUTPUT_FLAG==2){
-            std::cout << "# OUTPUTTING RHOS " << std::endl;
+            std::cerr << "# OUTPUTTING RHOS " << std::endl;
             IO::SaveConfigurationE("ProjRho",g2mu::Proj);
             IO::SaveConfigurationE("TargetRho",g2mu::Targ);
         }
         // END OPTION //
         
         // SET FIELDS FROM g2mu RHO FIELDS //
-        //std::cout << "# SETTING TARGET FIELDS " << std::endl;
+        //std::cerr << "# SETTING TARGET FIELDS " << std::endl;
         
         SetTarget(TargetFields::U,TempTargetFields::U,g2mu::Targ);
         
-        //std::cout << "# FINSIHED SETTING TARGET FIELDS " << std::endl;
+        //std::cerr << "# FINSIHED SETTING TARGET FIELDS " << std::endl;
         
-        //std::cout << "# SETTING TARGET FIELDS " << std::endl;
+        //std::cerr << "# SETTING TARGET FIELDS " << std::endl;
         
         SetProjectile(g2mu::Proj);
         
-        //std::cout << "# FINISHED SETTING TARGET FIELDS " << std::endl;
+        //std::cerr << "# FINISHED SETTING TARGET FIELDS " << std::endl;
         
-        std::cout << "# FINISHED SETTING GLAUBER+IP-Sat INITIAL CONDITIONS" << std::endl;
+        std::cerr << "# FINISHED SETTING GLAUBER+IP-Sat INITIAL CONDITIONS" << std::endl;
         
         
     }
