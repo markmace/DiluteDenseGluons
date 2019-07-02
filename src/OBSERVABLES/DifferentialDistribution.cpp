@@ -141,14 +141,14 @@ namespace Observables{
                                 // DEFINE AZIMUTHAL ANGLE //
                                 DOUBLE Phik2=atan2(k2YValue,k2XValue);
 
-                                if(kDIF_FLAG==0){
+                                if(kDIF_FLAG==1){
                                     v0+=real(k2Abs*dkBin*SIloc);
                                     v1+=k2Abs*dkBin*AsSIloc*exp(1.0*ComplexI*Phik2);
                                     v2+=k2Abs*dkBin*SIloc*exp(2.0*ComplexI*Phik2);
                                     v3+=k2Abs*dkBin*AsSIloc*exp(3.0*ComplexI*Phik2);
                                     v4+=k2Abs*dkBin*SIloc*exp(4.0*ComplexI*Phik2);
                                 }
-                                else if(kDIF_FLAG==1){
+                                else if(kDIF_FLAG==2){
                                     v0+=real(k2Abs*SIloc);
                                     v1+=k2Abs*AsSIloc*exp(1.0*ComplexI*Phik2);
                                     v2+=k2Abs*SIloc*exp(2.0*ComplexI*Phik2);
